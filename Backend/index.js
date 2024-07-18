@@ -10,6 +10,7 @@ import connectMongo from "connect-mongodb-session";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { buildContext } from "graphql-passport";
 
 import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
@@ -56,11 +57,14 @@ const server = new ApolloServer({
 await server.start();
 
 app.use(
-  "/",
-  cors(),
+  "/graphql",
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
   express.json(),
   expressMiddleware(server, {
-    context: async ({ req, res }) => ({ req, res }),
+    context: async ({ req, res }) => buildContext({ req, res }),
   })
 );
 
