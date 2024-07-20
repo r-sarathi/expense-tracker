@@ -16,8 +16,10 @@ import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
 import { connectDatabase } from "./database/connectDatabase.js";
+import { configurePassport } from "./passport/passport.config.js";
 
 dotenv.config();
+configurePassport();
 
 const __dirname = path.resolve();
 
