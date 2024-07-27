@@ -10,6 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { SIGN_UP } from "@/graphql/mutations/user.mutation";
+import { Loader2 } from "lucide-react";
 
 const Signup = () => {
   const [data, setData] = useState({
@@ -17,6 +20,10 @@ const Signup = () => {
     username: "",
     password: "",
     gender: "",
+  });
+
+  const [signup, { loading }] = useMutation(SIGN_UP, {
+    refetchQueries: ["GetAuthenticatedUser"],
   });
 
   const handleChange = (e) => {
@@ -27,9 +34,17 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
+    try {
+      await signup({
+        variables: {
+          input: data,
+        },
+      });
+    } catch (error) {
+      console.log("Error raised: ", error);
+    }
   };
 
   return (
@@ -88,21 +103,30 @@ const Signup = () => {
                 }
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Male" id="Male" />
+                  <RadioGroupItem value="male" id="Male" />
                   <p className="text-sm" htmlFor="option-one">
                     Male
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Female" id="Female" />
+                  <RadioGroupItem value="female" id="Female" />
                   <p className="text-sm" htmlFor="option-two">
                     Female
                   </p>
                 </div>
               </RadioGroup>
             </div>
-            <Button type="submit" className="w-full" onClick={handleSubmit}>
-              Create an account
+            <Button
+              type="submit"
+              className="w-full"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Create an account"
+              )}
             </Button>
             <Button variant="outline" className="w-full">
               Sign up with Google
